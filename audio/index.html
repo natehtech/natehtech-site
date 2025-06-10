@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Audio</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #111;
+      color: #fff;
+      padding: 40px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+    }
+
+    .track {
+      margin: 20px auto;
+      padding: 20px;
+      background: #222;
+      border-radius: 10px;
+      width: 300px;
+    }
+
+    button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .play-btn {
+      background: #0b0;
+      color: #fff;
+    }
+
+    .stop-btn {
+      background: #b00;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Audio</h1>
+
+  <div class="track" data-src="thehunter.opus">
+    <p>The Hunter (General)</p>
+    <button class="play-btn">Play</button>
+    <button class="stop-btn">Stop</button>
+  </div>
+  
+  <div class="track" data-src="tomsdiner.m4a">
+    <p>Tom's Diner (Vocals, Clarity)</p>
+    <button class="play-btn">Play</button>
+    <button class="stop-btn">Stop</button>
+  </div>
+
+  <div class="track" data-src="godspeed.m4a">
+    <p>Godspeed (Stereo, Subs, Clarity)</p>
+    <button class="play-btn">Play</button>
+    <button class="stop-btn">Stop</button>
+  </div>
+
+  <div class="track" data-src="mystrangeaddiction.m4a">
+    <p>My Strange Addiction (Subs)</p>
+    <button class="play-btn">Play</button>
+    <button class="stop-btn">Stop</button>
+  </div>
+  
+  <div class="track" data-src="thankstoyou.m4a">
+    <p>Thanks To You (Subs)</p>
+    <button class="play-btn">Play</button>
+    <button class="stop-btn">Stop</button>
+  </div>
+  
+  <div class="track" data-src="yourapartment.m4a">
+    <p>Your Apartment (General)</p>
+    <button class="play-btn">Play</button>
+    <button class="stop-btn">Stop</button>
+  </div>
+  
+  <div class="track" data-src="dreams.m4a">
+    <p>Dreams (General)</p>
+    <button class="play-btn">Play</button>
+    <button class="stop-btn">Stop</button>
+  </div>
+  
+  <div class="track" data-src="thislove.m4a">
+    <p>This Love (General)</p>
+    <button class="play-btn">Play</button>
+    <button class="stop-btn">Stop</button>
+  </div>
+
+  <script>
+    const tracks = document.querySelectorAll('.track');
+
+    tracks.forEach(track => {
+      const src = track.getAttribute('data-src');
+      const audio = new Audio(src);
+      audio.loop = true;
+      track.audio = audio;
+
+      const playBtn = track.querySelector('.play-btn');
+      const stopBtn = track.querySelector('.stop-btn');
+
+      playBtn.addEventListener('click', () => {
+        audio.play();
+      });
+
+      stopBtn.addEventListener('click', () => {
+        audio.pause();
+        audio.currentTime = 0;
+      });
+    });
+  </script>
+
+</body>
+</html>
+
