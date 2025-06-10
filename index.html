@@ -2,46 +2,62 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fullscreen Video</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nate H Tech</title>
   <style>
-    html, body {
+    body {
       margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
     }
 
-    video {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      min-width: 100%;
-      min-height: 100%;
-      width: auto;
-      height: auto;
-      z-index: -1;
-      transform: translate(-50%, -50%);
-      object-fit: cover;
-    }
-
-    .overlay {
-      position: relative;
-      z-index: 1;
-      color: white;
+    header {
+      background: #222;
+      padding: 20px;
       text-align: center;
-      padding-top: 20vh;
-      font-size: 3em;
-      font-family: sans-serif;
+      font-size: 2em;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    nav {
+      background: #333;
+      display: flex;
+      justify-content: center;
+      padding: 10px 0;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      margin: 0 20px;
+      font-size: 1.1em;
+      transition: color 0.2s;
+    }
+
+    nav a:hover {
+      color: #0bf;
+    }
+
+    main {
+      padding: 50px;
+      text-align: center;
+      font-size: 1.5em;
     }
   </style>
 </head>
 <body>
-  <video autoplay muted loop playsinline>
-    <source src="clickTrack30.mkv" type="video/mkv" />
-    Your browser does not support the video tag.
-  </video>
-  <div class="overlay">Welcome to My Site</div>
+  <header>Nate H Tech</header>
+
+  <nav>
+    <a href="click/">Click Track 30fps</a>
+  </nav>
+
+  <main>
+    <p>Welcome to Nate H Tech!</p>
+    <p>Explore tools and tech for audio, video, and live performance.</p>
+  </main>
 </body>
 </html>
 
