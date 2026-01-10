@@ -12,17 +12,28 @@
       overflow: hidden;
     }
 
-    video {
+    #stage{
+      position: fixed;
+      inset: 0;
+      background: #000;
+    }
+
+    /* Video fills the screen */
+    #bg-video {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      min-width: 100%;
-      min-height: 100%;
-      width: auto;
-      height: auto;
-      z-index: -1;
-      transform: translate(-50%, -50%);
+      inset: 0;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
+      z-index: 0;
+
+      /* compositor nudges */
+      transform: translateZ(0);
+      will-change: transform;
+      backface-visibility: hidden;
+
+      /* keep buttons clickable */
+      pointer-events: none;
     }
 
     .overlay {
@@ -34,24 +45,179 @@
       font-size: 3em;
       font-family: sans-serif;
     }
+
+    .overlay button {
+      font-size: 0.6em;
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .overlay button:first-child { background: #0bf; color: #000; }
+    .overlay button:nth-child(2) { background: #900; color: #fff; }
+    .overlay button:hover { opacity: 0.85; }
+
+    /* Fullscreen UI mode */
+    .fs-mode .overlay {
+      display: none;
+    }
+
+    .fs-mode {
+      cursor: none;
+    }
   </style>
 </head>
 <body>
-  <video id="bg-video" loop playsinline>
-  <source src="clickTrack30.mp4" type="video/mp4" />
-</video>
+  <div id="stage">
+    <video id="bg-video" loop playsinline preload="auto">
+      <source src="clickTrack30.mp4" type="video/mp4" />
+    </video>
 
-<div class="overlay">
-  <button onclick="playWithAudio()">Start</button>
-</div>
+    <div class="overlay">
+      <button onclick="playWithAudio()">Start</button>
+      <button onclick="stopVideo()">Stop</button>
+      <button onclick="toggleFullscreen()">Fullscreen</button>
+      <div id="dbg" style="font-size:16px;margin-top:20px;opacity:.8"></div>
+    </div>
+  </div>
 
-<script>
-  function playWithAudio() {
+  <script>
     const video = document.getElementById('bg-video');
-    video.muted = false;
-    video.play();
-  }
-</script>
+    const dbg = document.getElementById('dbg');
+    const stage = document.getElementById('stage');
+
+    video.loop = true;
+
+    // Fallback: if a browser fails to loop cleanly (often fullscreen + audio),
+    // restart and handle autoplay-with-sound restrictions.
+    video.addEventListener('ended', async () => {
+      video.currentTime = 0;
+
+      try {
+        await video.play();
+      } catch (e) {
+        // If replay is blocked because audio is on, start muted then unmute
+        const wasMuted = video.muted;
+        video.muted = true;
+
+        try {
+          await video.play();
+          video.muted = wasMuted;
+        } catch (e2) {
+          console.log("Replay blocked even when muted:", e2);
+        }
+      }
+    });
+
+    // Debug readout
+    setInterval(() => {
+      dbg.textContent =
+        `t=${video.currentTime.toFixed(2)} paused=${video.paused} readyState=${video.readyState} droppedFrames=${video.getVideoPlaybackQuality?.().droppedVideoFrames ?? 'n/a'}`;
+    }, 250);
+
+    async function playWithAudio() {
+      video.muted = false;
+      try {
+        await video.play();
+      } catch (e) {
+        console.log("Play failed:", e);
+      }
+    }
+
+    function stopVideo() {
+      video.pause();
+      video.currentTime = 0;
+    }
+
+    async function toggleFullscreen() {
+      const isFs =
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.msFullscreenElement;
+
+      if (!isFs) {
+        try {
+          if (stage.requestFullscreen) {
+            await stage.requestFullscreen();
+          } else if (stage.webkitRequestFullscreen) {
+            stage.webkitRequestFullscreen(); // Safari
+          } else if (stage.msRequestFullscreen) {
+            stage.msRequestFullscreen();
+          }
+
+          video.muted = false;
+          await video.play();
+        } catch (err) {
+          console.log("Fullscreen/play failed:", err);
+        }
+      } else {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      }
+    }
+
+    // Fullscreen UI handling
+    let hideUiTimer = null;
+
+    function enterFsUiMode() {
+      document.body.classList.add('fs-mode');
+      clearTimeout(hideUiTimer);
+      hideUiTimer = setTimeout(() => {
+        document.body.classList.add('fs-mode');
+      }, 300);
+    }
+
+    function exitFsUiMode() {
+      clearTimeout(hideUiTimer);
+      document.body.classList.remove('fs-mode');
+    }
+
+    function onFullscreenChange() {
+      const isFs =
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.msFullscreenElement;
+
+      if (isFs) {
+        enterFsUiMode();
+        video.play().catch(() => {});
+      } else {
+        exitFsUiMode();
+        video.pause();
+        video.currentTime = 0;
+      }
+    }
+
+    document.addEventListener('fullscreenchange', onFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', onFullscreenChange);
+    document.addEventListener('msfullscreenchange', onFullscreenChange);
+
+    // Show UI briefly on mouse/touch in fullscreen
+    let uiTimer = null;
+
+    function showUiTemporarily() {
+      const isFs =
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.msFullscreenElement;
+
+      if (!isFs) return;
+
+      document.body.classList.remove('fs-mode');
+
+      clearTimeout(uiTimer);
+      uiTimer = setTimeout(() => {
+        document.body.classList.add('fs-mode');
+      }, 2000);
+    }
+
+    document.addEventListener('mousemove', showUiTemporarily);
+    document.addEventListener('touchstart', showUiTemporarily, { passive: true });
+  </script>
 </body>
 </html>
-
