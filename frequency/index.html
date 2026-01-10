@@ -59,6 +59,11 @@
     .overlay button:nth-child(2) { background: #900; color: #fff; }
     .overlay button:hover { opacity: 0.85; }
 
+    .overlay button:nth-child(4) {
+      background: #555;
+      color: #fff;
+    }
+
     /* Fullscreen UI mode */
     .fs-mode .overlay {
       display: none;
@@ -79,6 +84,7 @@
       <button onclick="playWithAudio()">Start</button>
       <button onclick="stopVideo()">Stop</button>
       <button onclick="toggleFullscreen()">Fullscreen</button>
+      <a href="/">Back</a>
       <div id="dbg" style="font-size:16px;margin-top:20px;opacity:.8"></div>
     </div>
   </div>
