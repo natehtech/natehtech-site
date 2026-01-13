@@ -64,6 +64,22 @@
       color: #fff;
     }
 
+    .overlay .back-btn {
+      display: inline-block;
+      font-size: 0.6em;
+      padding: 10px 20px;
+      margin: 10px;
+      border-radius: 5px;
+      background: #555;
+      color: #fff;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .overlay .back-btn:hover {
+      opacity: 0.85;
+    }
+
     /* Fullscreen UI mode */
     .fs-mode .overlay {
       display: none;
@@ -84,7 +100,7 @@
       <button onclick="playWithAudio()">Start</button>
       <button onclick="stopVideo()">Stop</button>
       <button onclick="toggleFullscreen()">Fullscreen</button>
-      <a href="/">Back</a>
+      <a href="/" class="back-btn">Back</a>
       <div id="dbg" style="font-size:16px;margin-top:20px;opacity:.8"></div>
     </div>
   </div>
